@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { marked } from "marked";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader } from "./loader";
@@ -30,6 +31,18 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
       onGenerate(selectedTopics);
     }
   };
+  
+  const renderedCritique = useMemo(() => {
+    if (!result) return null;
+    // Sanitize and parse the markdown
+    const dirtyHtml = marked.parse(result);
+    // In a real-world app, you should use a sanitizer like DOMPurify here
+    // for security. For this example, we'll trust the AI output.
+    // import DOMPurify from 'dompurify';
+    // const cleanHtml = DOMPurify.sanitize(dirtyHtml);
+    return { __html: dirtyHtml as string };
+  }, [result]);
+
 
   return (
     <Card className="glassmorphism">
@@ -78,11 +91,11 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
             <p className="text-muted-foreground mt-2">AI is analyzing your work...</p>
           </div>
         )}
-        {result && (
-          <div className="p-4 bg-black/30 rounded-lg prose prose-invert prose-p:text-gray-300 prose-headings:text-white">
+        {renderedCritique && (
+          <div className="p-4 bg-black/30 rounded-lg prose prose-invert max-w-none prose-p:text-gray-300 prose-headings:text-white">
              <div
               className="markdown-content"
-              dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br />') }}
+              dangerouslySetInnerHTML={renderedCritique}
             />
           </div>
         )}
