@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback, useRef } from "react";
@@ -10,6 +11,15 @@ import { extractColorPalette } from "@/ai/flows/extract-color-palette";
 import { createMixingRecipes } from "@/ai/flows/generate-color-mixing-recipes";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/app/theme-toggle";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type RequestType = "critique" | "palette" | "recipes";
 
@@ -167,7 +177,44 @@ ${JSON.stringify(payload.palette)}`;
 
   return (
     <main className="min-h-screen container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <span className="material-symbols-outlined">help</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>How to Use</DialogTitle>
+              <DialogDescription>
+                Follow these steps to get an AI analysis of your art.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="prose prose-sm dark:prose-invert">
+              <ol>
+                <li>
+                  <strong>Upload Your Artwork:</strong> Drag and drop an image file or click the upload area to select a file from your device.
+                </li>
+                <li>
+                  <strong>Select Critique Focus:</strong> Choose one or more topics like "Color Theory" or "Composition" that you want the AI to focus on, then click "Generate Critique."
+                </li>
+                <li>
+                  <strong>Analyze Colors:</strong> Click "Extract Palette" to identify the prominent colors in your image.
+                </li>
+                <li>
+                  <strong>Create Recipes:</strong> After extracting a palette, click "Generate Mixing Recipes" to get formulas for mixing those colors with traditional paints.
+                </li>
+                 <li>
+                  <strong>Outline a Focus Area:</strong> You can click and drag on your uploaded image to draw a red outline around a specific part of your artwork. This helps focus the AI's analysis. Use the "Clear Outline" button to remove it.
+                </li>
+                <li>
+                  <strong>Toggle Theme:</strong> Use the sun/moon icon in the top right to switch between light and dark modes.
+                </li>
+              </ol>
+            </div>
+          </DialogContent>
+        </Dialog>
         <ThemeToggle />
       </div>
       <header className="text-center mb-8 md:mb-12">
@@ -212,3 +259,5 @@ ${JSON.stringify(payload.palette)}`;
     </main>
   );
 }
+
+    
