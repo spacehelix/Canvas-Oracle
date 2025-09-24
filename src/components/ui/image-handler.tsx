@@ -29,7 +29,6 @@ export default function ImageHandler({
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const lastPointRef = useRef<Point | null>(null);
 
   useImperativeHandle(clearDrawingRef, () => ({
     clear: handleClear,
@@ -48,28 +47,21 @@ export default function ImageHandler({
     onDrop,
     accept: { "image/*": [".jpeg", ".png", ".gif", ".webp"] },
     multiple: false,
-    noClick: !!imageUrl, // Disable click to open if image is present
   });
 
   const getCanvasCoordinates = (event: React.MouseEvent<HTMLCanvasElement>): Point | null => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
     return {
-      x: (event.clientX - rect.left) * scaleX,
-      y: (event.clientY - rect.top) * scaleY,
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
     };
   };
 
   const startDrawing = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    event.stopPropagation(); // Prevent dropzone from triggering
     const coords = getCanvasCoordinates(event);
     if (!coords) return;
-    
-    lastPointRef.current = coords;
-
     const context = canvasRef.current?.getContext("2d");
     if (!context) return;
     context.beginPath();
@@ -80,14 +72,11 @@ export default function ImageHandler({
   const draw = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
     const coords = getCanvasCoordinates(event);
-    if (!coords || !lastPointRef.current) return;
-    
+    if (!coords) return;
     const context = canvasRef.current?.getContext("2d");
     if (!context) return;
-
     context.lineTo(coords.x, coords.y);
     context.stroke();
-    lastPointRef.current = coords;
   };
 
   const stopDrawing = () => {
@@ -95,7 +84,6 @@ export default function ImageHandler({
     if (!context) return;
     context.closePath();
     setIsDrawing(false);
-    lastPointRef.current = null;
   };
 
   const handleClear = () => {
@@ -106,53 +94,20 @@ export default function ImageHandler({
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-  const resizeCanvas = useCallback(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     const container = imageContainerRef.current;
-    if (canvas && container) {
+    if (canvas && container && imageUrl) {
       const { width, height } = container.getBoundingClientRect();
-      if(canvas.width !== width || canvas.height !== height) {
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
-        if(tempCtx) {
-          tempCtx.drawImage(canvas, 0, 0);
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        
-        const context = canvas.getContext("2d");
-        if (context) {
-          context.drawImage(tempCanvas, 0, 0, width, height);
-          context.strokeStyle = "rgba(215, 38, 61, 0.7)"; // Semi-transparent crimson
-          context.lineWidth = 3;
-          context.lineCap = "round";
-          context.lineJoin = "round";
-        }
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.strokeStyle = "rgba(215, 38, 61, 0.7)"; // Semi-transparent crimson
+        context.lineWidth = 3;
+        context.lineCap = "round";
+        context.lineJoin = "round";
       }
-    }
-  }, []);
-
-  useEffect(() => {
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-    }
-  }, [resizeCanvas]);
-  
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if(canvas){
-       const context = canvas.getContext("2d");
-        if (context) {
-          context.strokeStyle = "rgba(215, 38, 61, 0.7)"; // Semi-transparent crimson
-          context.lineWidth = 3;
-          context.lineCap = "round";
-          context.lineJoin = "round";
-        }
     }
   }, [imageUrl]);
 
@@ -162,8 +117,7 @@ export default function ImageHandler({
         ref={imageContainerRef}
         {...getRootProps()}
         className={cn(
-          "relative w-full aspect-[4/3] rounded-lg border-2 border-dashed transition-colors duration-300 glassmorphism flex items-center justify-center",
-          {"cursor-pointer": !imageUrl},
+          "relative w-full aspect-[4/3] rounded-lg border-2 border-dashed transition-colors duration-300 glassmorphism flex items-center justify-center cursor-pointer",
           { "border-cyan-400/80": isDragActive, "border-cyan-400/50": !isDragActive }
         )}
       >
@@ -175,7 +129,6 @@ export default function ImageHandler({
               alt="Uploaded artwork"
               fill
               className="object-contain rounded-md"
-              onLoad={resizeCanvas}
             />
             <canvas
               ref={canvasRef}
@@ -198,7 +151,7 @@ export default function ImageHandler({
                 ? "Drop the image here..."
                 : "Drag & drop art here, or click to select"}
             </p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Supports PNG, JPG, GIF, WEBP
             </p>
           </div>
@@ -206,9 +159,9 @@ export default function ImageHandler({
       </div>
       {imageUrl && (
         <div className="flex justify-between items-center">
-            <div {...getRootProps({onClick: (e) => e.stopPropagation()})} className="w-auto">
+            <div {...getRootProps()} className="w-auto">
               <input {...getInputProps()} />
-              <Button variant="outline" onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}>Change Image</Button>
+              <Button variant="outline">Change Image</Button>
             </div>
            <Button variant="destructive" onClick={(e) => { e.stopPropagation(); handleClear(); }}>
               <Eraser className="mr-2 h-4 w-4" />

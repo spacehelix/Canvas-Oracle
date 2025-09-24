@@ -9,6 +9,7 @@ import type { Palette, MixingRecipe } from "@/lib/types";
 import { extractColorPalette } from "@/ai/flows/extract-color-palette";
 import { createMixingRecipes } from "@/ai/flows/generate-color-mixing-recipes";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/app/theme-toggle";
 
 type RequestType = "critique" | "palette" | "recipes";
 
@@ -166,11 +167,14 @@ ${JSON.stringify(payload.palette)}`;
 
   return (
     <main className="min-h-screen container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <header className="text-center mb-8 md:mb-12">
-        <h1 className="font-display text-4xl md:text-6xl font-bold text-white">
+        <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground">
           AI Art Critic & Colorist
         </h1>
-        <p className="text-gray-300 mt-2 text-lg">
+        <p className="text-muted-foreground mt-2 text-lg">
           Upload your art to get an AI-powered analysis.
         </p>
       </header>

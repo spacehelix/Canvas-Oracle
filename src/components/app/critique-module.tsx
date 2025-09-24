@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Loader } from "./loader";
 import { cn } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 type CritiqueModuleProps = {
   onGenerate: (topics: string[]) => void;
@@ -34,13 +36,11 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
   
   const renderedCritique = useMemo(() => {
     if (!result) return null;
-    // Sanitize and parse the markdown
-    const dirtyHtml = marked.parse(result);
     // In a real-world app, you should use a sanitizer like DOMPurify here
     // for security. For this example, we'll trust the AI output.
     // import DOMPurify from 'dompurify';
     // const cleanHtml = DOMPurify.sanitize(dirtyHtml);
-    return { __html: dirtyHtml as string };
+    return { __html: marked.parse(result) as string };
   }, [result]);
 
 
@@ -51,7 +51,7 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
           <span className="material-symbols-outlined text-red-400">palette</span>
           <div>
             <CardTitle className="font-bold text-xl">1. Select Critique Focus</CardTitle>
-            <CardDescription className="text-gray-300">
+            <CardDescription className="text-muted-foreground">
               Choose aspects of your art for the AI to analyze.
             </CardDescription>
           </div>
@@ -64,10 +64,12 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
               key={topic}
               onClick={() => handleTopicToggle(topic)}
               className={cn(
-                "px-6 py-2 rounded-md text-sm font-semibold transition-all bg-transparent",
+                "px-6 py-2 rounded-md text-sm font-semibold transition-all",
+                "border-2 border-gray-600 dark:border-gray-600 dark:hover:bg-gray-700/50",
+                "light:border-gray-300 light:hover:bg-gray-200/50",
                 selectedTopics.includes(topic)
                   ? `gradient-border ${GRADIENT_CLASSES[index]}`
-                  : "border-2 border-gray-600 hover:bg-gray-700/50"
+                  : "border-2 border-border hover:bg-accent/10"
               )}
             >
               {topic}
@@ -85,19 +87,35 @@ export default function CritiqueModule({ onGenerate, isLoading, result, isImageU
           Generate Critique
         </Button>
 
-        {isLoading && !result && (
+        {(isLoading && !result) && (
           <div className="text-center p-4">
             <Loader />
             <p className="text-muted-foreground mt-2">AI is analyzing your work...</p>
           </div>
         )}
-        {renderedCritique && (
-          <div className="p-4 bg-black/30 rounded-lg prose prose-invert max-w-none prose-p:text-gray-300 prose-headings:text-white">
-             <div
-              className="markdown-content"
-              dangerouslySetInnerHTML={renderedCritique}
-            />
-          </div>
+        {result && (
+          <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="font-bold">View Critique</AccordionTrigger>
+              <AccordionContent>
+                {isLoading ? (
+                  <div className="text-center p-4">
+                    <Loader />
+                    <p className="text-muted-foreground mt-2">AI is analyzing your work...</p>
+                  </div>
+                ) : (
+                  renderedCritique && (
+                    <div className="p-4 bg-background/50 rounded-lg prose dark:prose-invert max-w-none">
+                       <div
+                        className="markdown-content"
+                        dangerouslySetInnerHTML={renderedCritique}
+                      />
+                    </div>
+                  )
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         )}
       </CardContent>
     </Card>

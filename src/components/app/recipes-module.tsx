@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "./loader";
 import type { MixingRecipe } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type RecipesModuleProps = {
   onGenerate: () => void;
@@ -35,7 +36,7 @@ export default function RecipesModule({
             <CardTitle className="font-bold text-xl">
               3. Create Recipes
             </CardTitle>
-            <CardDescription className="text-gray-300">
+            <CardDescription className="text-muted-foreground">
               Generate paint mixing recipes for your extracted colors.
             </CardDescription>
           </div>
@@ -52,7 +53,7 @@ export default function RecipesModule({
           Generate Mixing Recipes
         </Button>
 
-        {isLoading && !result && (
+        {(isLoading && !result) && (
           <div className="text-center p-4">
             <Loader />
             <p className="text-muted-foreground mt-2">
@@ -61,51 +62,62 @@ export default function RecipesModule({
           </div>
         )}
         {result && (
-          <div className="space-y-4">
-            <h4 className="font-bold text-lg">Mixing Recipes:</h4>
-            <div className="space-y-6">
-              {result.map(({ extractedColor, recipe }) => (
-                <Card key={extractedColor.hex} className="bg-black/30">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-10 h-10 rounded-full border-2 border-white/20"
-                        style={{ backgroundColor: extractedColor.hex }}
-                      />
-                      <div>
-                        <CardTitle className="text-xl">
-                          {extractedColor.name}
-                        </CardTitle>
-                        <CardDescription className="font-mono text-gray-400">
-                          {extractedColor.hex}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {recipe.map((ingredient) => (
-                        <div key={ingredient.name} className="space-y-1">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium">
-                              {ingredient.name}
-                            </span>
-                            <span className="text-gray-400">
-                              {ingredient.percent}%
-                            </span>
-                          </div>
-                          <Progress
-                            value={ingredient.percent}
-                            className="h-2"
+          <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="font-bold">View Recipes</AccordionTrigger>
+              <AccordionContent>
+              {isLoading ? (
+                  <div className="text-center p-4">
+                    <Loader />
+                    <p className="text-muted-foreground mt-2">AI is mixing your colors...</p>
+                  </div>
+              ) : (
+                <div className="space-y-6 pt-2">
+                  {result.map(({ extractedColor, recipe }) => (
+                    <Card key={extractedColor.hex} className="bg-background/30 dark:bg-black/30">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-full border-2 border-white/20 dark:border-white/20"
+                            style={{ backgroundColor: extractedColor.hex }}
                           />
+                          <div>
+                            <CardTitle className="text-xl">
+                              {extractedColor.name}
+                            </CardTitle>
+                            <CardDescription className="font-mono text-muted-foreground">
+                              {extractedColor.hex}
+                            </CardDescription>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {recipe.map((ingredient) => (
+                            <div key={ingredient.name} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="font-medium">
+                                  {ingredient.name}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  {ingredient.percent}%
+                                </span>
+                              </div>
+                              <Progress
+                                value={ingredient.percent}
+                                className="h-2"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         )}
       </CardContent>
     </Card>
