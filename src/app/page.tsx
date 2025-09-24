@@ -6,12 +6,9 @@ import CritiqueModule from "@/components/app/critique-module";
 import PaletteModule from "@/components/app/palette-module";
 import RecipesModule from "@/components/app/recipes-module";
 import type { Palette, MixingRecipe } from "@/lib/types";
-import { generateArtCritique } from "@/ai/flows/generate-art-critique";
 import { extractColorPalette } from "@/ai/flows/extract-color-palette";
 import { createMixingRecipes } from "@/ai/flows/generate-color-mixing-recipes";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type RequestType = "critique" | "palette" | "recipes";
 
@@ -75,11 +72,17 @@ ${JSON.stringify(payload.palette)}`;
     try {
       switch (requestType) {
         case "critique":
-          const critiqueResponse = await generateArtCritique({
-            image: payload.image,
-            topics: payload.topics,
+          const critiqueResponse = await fetch('/api/generate-art-critique', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image: payload.image,
+              topics: payload.topics,
+            }),
           });
-          setCritiqueResult(critiqueResponse.critique);
+          if (!critiqueResponse.ok) throw new Error('Critique request failed');
+          const critiqueData = await critiqueResponse.json();
+          setCritiqueResult(critiqueData.critique);
           break;
         case "palette":
           const paletteResponse = await extractColorPalette({
@@ -162,18 +165,18 @@ ${JSON.stringify(payload.palette)}`;
   };
 
   return (
-    <main className="min-h-screen container mx-auto p-4 md:p-8">
+    <main className="min-h-screen container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
       <header className="text-center mb-8 md:mb-12">
-        <h1 className="font-headline text-4xl md:text-6xl font-bold text-primary">
+        <h1 className="font-display text-4xl md:text-6xl font-bold text-white">
           AI Art Critic & Colorist
         </h1>
-        <p className="text-muted-foreground mt-2 text-lg">
+        <p className="text-gray-300 mt-2 text-lg">
           Upload your art to get an AI-powered analysis.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-        <div className="flex flex-col gap-6 sticky top-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="flex flex-col gap-6">
           <ImageHandler
             onImageUpload={handleImageUpload}
             imageUrl={imageDataUrl}

@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Palette as PaletteIcon, Sparkles } from "lucide-react";
 import { Loader } from "./loader";
 import type { Color, Palette } from "@/lib/types";
 
@@ -21,14 +20,14 @@ type PaletteModuleProps = {
 };
 
 const ColorSwatch = ({ name, hex }: Color) => (
-  <div className="flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50 transition-colors">
+  <div className="flex items-center gap-3 p-2 rounded-md hover:bg-black/20 transition-colors">
     <div
-      className="w-8 h-8 rounded-md border border-border"
+      className="w-8 h-8 rounded-md border border-white/20"
       style={{ backgroundColor: hex }}
     />
     <div>
       <p className="font-semibold">{name}</p>
-      <p className="text-sm text-muted-foreground font-mono">{hex}</p>
+      <p className="text-sm text-gray-400 font-mono">{hex}</p>
     </div>
   </div>
 );
@@ -40,15 +39,15 @@ export default function PaletteModule({
   isImageUploaded,
 }: PaletteModuleProps) {
   return (
-    <Card className="shadow-lg">
+    <Card className="glassmorphism">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <PaletteIcon className="w-8 h-8 text-primary" />
+          <span className="material-symbols-outlined text-pink-400">colorize</span>
           <div>
-            <CardTitle className="font-headline text-2xl">
+            <CardTitle className="font-bold text-xl">
               2. Analyze Colors
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               Extract a palette of prominent colors from your artwork.
             </CardDescription>
           </div>
@@ -58,10 +57,10 @@ export default function PaletteModule({
         <Button
           onClick={onGenerate}
           disabled={!isImageUploaded || isLoading}
-          className="w-full font-bold"
+          className="w-full font-bold text-white bg-pink-500/80 hover:bg-pink-500/90 transition-all"
           size="lg"
         >
-          {isLoading ? <Loader /> : <Sparkles className="mr-2 h-4 w-4" />}
+          {isLoading ? <Loader /> : <span className="material-symbols-outlined mr-2">science</span>}
           Extract Palette
         </Button>
         {isLoading && !result && (
@@ -74,10 +73,10 @@ export default function PaletteModule({
         )}
         {result && (
           <div className="space-y-4">
-            <h4 className="font-bold font-headline text-lg">Color Palette:</h4>
+            <h4 className="font-bold text-lg">Color Palette:</h4>
             {result.primary.length > 0 && (
               <div>
-                <h5 className="font-semibold text-muted-foreground mb-2">Primary Colors</h5>
+                <h5 className="font-semibold text-gray-400 mb-2">Primary Colors</h5>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {result.primary.map((color) => (
                     <ColorSwatch key={color.hex} {...color} />
@@ -87,7 +86,7 @@ export default function PaletteModule({
             )}
             {result.secondary.length > 0 && (
               <div>
-                <h5 className="font-semibold text-muted-foreground mb-2">Secondary Colors</h5>
+                <h5 className="font-semibold text-gray-400 mb-2">Secondary Colors</h5>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {result.secondary.map((color) => (
                     <ColorSwatch key={color.hex} {...color} />
@@ -97,7 +96,7 @@ export default function PaletteModule({
             )}
             {result.tertiary.length > 0 && (
               <div>
-                <h5 className="font-semibold text-muted-foreground mb-2">Tertiary Colors</h5>
+                <h5 className="font-semibold text-gray-400 mb-2">Tertiary Colors</h5>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {result.tertiary.map((color) => (
                     <ColorSwatch key={color.hex} {...color} />

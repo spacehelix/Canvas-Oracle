@@ -10,7 +10,7 @@ import React, {
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UploadCloud, Eraser } from "lucide-react";
+import { Eraser } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ImageHandlerProps = {
@@ -115,12 +115,13 @@ export default function ImageHandler({
     <div className="space-y-4">
       <div
         ref={imageContainerRef}
+        {...getRootProps()}
         className={cn(
-          "relative w-full aspect-[4/3] bg-card rounded-lg border-2 border-dashed border-border transition-colors duration-300",
-          { "border-primary bg-primary/10": isDragActive },
-          { "flex items-center justify-center": !imageUrl }
+          "relative w-full aspect-[4/3] rounded-lg border-2 border-dashed transition-colors duration-300 glassmorphism flex items-center justify-center cursor-pointer",
+          { "border-cyan-400/80": isDragActive, "border-cyan-400/50": !isDragActive }
         )}
       >
+        <input {...getInputProps()} />
         {imageUrl ? (
           <>
             <Image
@@ -140,17 +141,17 @@ export default function ImageHandler({
           </>
         ) : (
           <div
-            {...getRootProps()}
-            className="w-full h-full flex flex-col items-center justify-center text-center cursor-pointer p-8"
+            className="w-full h-full flex flex-col items-center justify-center text-center p-8"
           >
-            <input {...getInputProps()} />
-            <UploadCloud className="w-16 h-16 text-muted-foreground mb-4" />
-            <p className="font-bold text-lg">
+            <span className="material-symbols-outlined text-6xl text-cyan-400">
+              cloud_upload
+            </span>
+            <p className="font-bold text-xl mt-4">
               {isDragActive
                 ? "Drop the image here..."
                 : "Drag & drop art here, or click to select"}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-400 mt-1">
               Supports PNG, JPG, GIF, WEBP
             </p>
           </div>
@@ -162,7 +163,7 @@ export default function ImageHandler({
               <input {...getInputProps()} />
               <Button variant="outline">Change Image</Button>
             </div>
-           <Button variant="destructive" onClick={handleClear}>
+           <Button variant="destructive" onClick={(e) => { e.stopPropagation(); handleClear(); }}>
               <Eraser className="mr-2 h-4 w-4" />
               Clear Outline
             </Button>

@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Brush, Sparkles } from "lucide-react";
 import { Loader } from "./loader";
 import type { MixingRecipe } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
@@ -28,15 +27,15 @@ export default function RecipesModule({
   isPaletteExtracted,
 }: RecipesModuleProps) {
   return (
-    <Card className="shadow-lg">
+    <Card className="glassmorphism">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <Brush className="w-8 h-8 text-primary" />
+          <span className="material-symbols-outlined text-teal-300">auto_awesome</span>
           <div>
-            <CardTitle className="font-headline text-2xl">
+            <CardTitle className="font-bold text-xl">
               3. Create Recipes
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               Generate paint mixing recipes for your extracted colors.
             </CardDescription>
           </div>
@@ -46,10 +45,10 @@ export default function RecipesModule({
         <Button
           onClick={onGenerate}
           disabled={!isPaletteExtracted || isLoading}
-          className="w-full font-bold"
+          className="w-full font-bold text-white bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 transition-all"
           size="lg"
         >
-          {isLoading ? <Loader /> : <Sparkles className="mr-2 h-4 w-4" />}
+          {isLoading ? <Loader /> : <span className="material-symbols-outlined mr-2">blender</span>}
           Generate Mixing Recipes
         </Button>
 
@@ -63,21 +62,21 @@ export default function RecipesModule({
         )}
         {result && (
           <div className="space-y-4">
-            <h4 className="font-bold font-headline text-lg">Mixing Recipes:</h4>
+            <h4 className="font-bold text-lg">Mixing Recipes:</h4>
             <div className="space-y-6">
               {result.map(({ extractedColor, recipe }) => (
-                <Card key={extractedColor.hex} className="bg-secondary/50">
+                <Card key={extractedColor.hex} className="bg-black/30">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-full border-2 border-border"
+                        className="w-10 h-10 rounded-full border-2 border-white/20"
                         style={{ backgroundColor: extractedColor.hex }}
                       />
                       <div>
                         <CardTitle className="text-xl">
                           {extractedColor.name}
                         </CardTitle>
-                        <CardDescription className="font-mono">
+                        <CardDescription className="font-mono text-gray-400">
                           {extractedColor.hex}
                         </CardDescription>
                       </div>
@@ -91,7 +90,7 @@ export default function RecipesModule({
                             <span className="font-medium">
                               {ingredient.name}
                             </span>
-                            <span className="text-muted-foreground">
+                            <span className="text-gray-400">
                               {ingredient.percent}%
                             </span>
                           </div>
