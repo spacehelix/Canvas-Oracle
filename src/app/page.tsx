@@ -218,12 +218,16 @@ ${JSON.stringify(payload.palette)}`;
         <ThemeToggle />
       </div>
       <header className="text-center mb-8 md:mb-12">
-        <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground">
-          AI Art Critic & Colorist
+        <h1 className="font-display text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-pink-400 to-blue-400">
+          Canvas Oracle
         </h1>
-        <p className="text-muted-foreground mt-2 text-lg">
-          Upload your art to get an AI-powered analysis.
-        </p>
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <span className="tagline-item">Create</span>
+          <span className="text-muted-foreground">&bull;</span>
+          <span className="tagline-item">Refine</span>
+          <span className="text-muted-foreground">&bull;</span>
+          <span className="tagline-item">Harmonize</span>
+        </div>
       </header>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -259,5 +263,3 @@ ${JSON.stringify(payload.palette)}`;
     </main>
   );
 }
-
-    

@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/app/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Arty Assistant",
-  description: "The AI Art Critic & Colorist",
+  title: "Canvas Oracle",
+  description: "Create - Refine - Harmonize.",
 };
 
 export default function RootLayout({
