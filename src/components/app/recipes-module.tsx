@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -27,6 +28,53 @@ export default function RecipesModule({
   result,
   isPaletteExtracted,
 }: RecipesModuleProps) {
+
+  const recipesContent = (
+      <div className="space-y-6 pt-2">
+        {result && result.map(({ extractedColor, recipe }) => (
+          <Card key={extractedColor.hex} className="bg-background/30 dark:bg-black/30">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-full border-2 border-white/20 dark:border-white/20"
+                  style={{ backgroundColor: extractedColor.hex.startsWith('#') ? extractedColor.hex : `#${extractedColor.hex}` }}
+                />
+                <div>
+                  <CardTitle className="text-xl">
+                    {extractedColor.name}
+                  </CardTitle>
+                  <CardDescription className="font-mono text-muted-foreground">
+                    {extractedColor.hex}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recipe.map((ingredient) => (
+                  <div key={ingredient.name} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">
+                        {ingredient.name}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {ingredient.percent}%
+                      </span>
+                    </div>
+                    <Progress
+                      value={ingredient.percent}
+                      className="h-2"
+                    />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+
+
   return (
     <Card className="glassmorphism">
       <CardHeader>
@@ -72,48 +120,7 @@ export default function RecipesModule({
                     <p className="text-muted-foreground mt-2">AI is mixing your colors...</p>
                   </div>
               ) : (
-                <div className="space-y-6 pt-2">
-                  {result.map(({ extractedColor, recipe }) => (
-                    <Card key={extractedColor.hex} className="bg-background/30 dark:bg-black/30">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-10 h-10 rounded-full border-2 border-white/20 dark:border-white/20"
-                            style={{ backgroundColor: extractedColor.hex }}
-                          />
-                          <div>
-                            <CardTitle className="text-xl">
-                              {extractedColor.name}
-                            </CardTitle>
-                            <CardDescription className="font-mono text-muted-foreground">
-                              {extractedColor.hex}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {recipe.map((ingredient) => (
-                            <div key={ingredient.name} className="space-y-1">
-                              <div className="flex justify-between text-sm">
-                                <span className="font-medium">
-                                  {ingredient.name}
-                                </span>
-                                <span className="text-muted-foreground">
-                                  {ingredient.percent}%
-                                </span>
-                              </div>
-                              <Progress
-                                value={ingredient.percent}
-                                className="h-2"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                recipesContent
               )}
               </AccordionContent>
             </AccordionItem>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -24,7 +25,7 @@ const ColorSwatch = ({ name, hex }: Color) => (
   <div className="flex items-center gap-3 p-2 rounded-md hover:bg-black/10 dark:hover:bg-black/20 transition-colors">
     <div
       className="w-8 h-8 rounded-md border border-white/20 dark:border-white/20"
-      style={{ backgroundColor: hex }}
+      style={{ backgroundColor: hex.startsWith('#') ? hex : `#${hex}` }}
     />
     <div>
       <p className="font-semibold">{name}</p>
@@ -39,6 +40,42 @@ export default function PaletteModule({
   result,
   isImageUploaded,
 }: PaletteModuleProps) {
+
+  const paletteContent = (
+      <div className="space-y-4 pt-2">
+        {result && result.primary.length > 0 && (
+          <div>
+            <h5 className="font-semibold text-muted-foreground mb-2">Primary Colors</h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {result.primary.map((color) => (
+                <ColorSwatch key={color.hex} {...color} />
+              ))}
+            </div>
+          </div>
+        )}
+        {result && result.secondary.length > 0 && (
+          <div>
+            <h5 className="font-semibold text-muted-foreground mb-2">Secondary Colors</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {result.secondary.map((color) => (
+                <ColorSwatch key={color.hex} {...color} />
+              ))}
+            </div>
+          </div>
+        )}
+        {result && result.tertiary.length > 0 && (
+          <div>
+            <h5 className="font-semibold text-muted-foreground mb-2">Tertiary Colors</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {result.tertiary.map((color) => (
+                <ColorSwatch key={color.hex} {...color} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+
   return (
     <Card className="glassmorphism">
       <CardHeader>
@@ -83,38 +120,7 @@ export default function PaletteModule({
                     <p className="text-muted-foreground mt-2">AI is detecting colors...</p>
                   </div>
               ) : (
-                  <div className="space-y-4 pt-2">
-                    {result.primary.length > 0 && (
-                      <div>
-                        <h5 className="font-semibold text-muted-foreground mb-2">Primary Colors</h5>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {result.primary.map((color) => (
-                            <ColorSwatch key={color.hex} {...color} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {result.secondary.length > 0 && (
-                      <div>
-                        <h5 className="font-semibold text-muted-foreground mb-2">Secondary Colors</h5>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {result.secondary.map((color) => (
-                            <ColorSwatch key={color.hex} {...color} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {result.tertiary.length > 0 && (
-                      <div>
-                        <h5 className="font-semibold text-muted-foreground mb-2">Tertiary Colors</h5>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {result.tertiary.map((color) => (
-                            <ColorSwatch key={color.hex} {...color} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  paletteContent
                 )}
               </AccordionContent>
             </AccordionItem>
